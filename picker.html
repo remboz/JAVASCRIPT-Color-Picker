@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>jscolor Examples</title>
+	<style>
+		body { 
+		background:#fff;
+		}
+		
+		#picker{
+		 position:absolute;
+		 width:300px;
+		 padding:5px;
+		 height:auto;
+		 left:50%;
+		 top:50%;
+		 transform:translate(-50%,-50%);
+		 box-shadow:0 0 2px gold;
+		 text-align:center;
+		 background:rgba(0,0,0,0.8);
+		 border-radius: 6px;
+		 box-shadow:0 0 1000px 10px black;
+		}
+		
+		#picker h3{
+		 text-align:left;
+		 padding-left:5%;
+		 color:silver;
+		}
+		
+		#picker p{
+		  margin:0;
+		  margin-top:5px;
+		  width:100%;
+		  height:40px;
+		  background:none;
+		  line-height:40px;
+		  display:flex;
+		  align-items:middle;
+		  justify-content:center;
+		}
+		
+ 	#picker p span{
+ 	   display:inline-block;
+		  width:35%;
+		  height:40px;
+		  background:silver;
+		  margin-left:5px;
+		  margin-right:5px;
+		}
+		
+ 	#picker p button{
+ 	   display:inline-block;
+		  width:45%;
+		  height:40px;
+		  background:silver;
+		  border:none;
+		  outline:none;
+		  margin-left:2px;
+		  margib-righr:2px;
+		}
+		
+		#pickerarea,#bar{
+		  display:inline;
+		  margin:0;
+		  padding:0;
+		  position:relative;
+		}
+		
+		#marker,#marker2{
+		 position:absolute;
+		 width:6px;
+		 height:6px;
+		 left:0;
+		 top:0;
+		 box-shadow:0 0 2px 1px white;
+		 z-index:2;
+		}
+		#marker{
+		  border-radius:50%;
+  	}
+		#marker2{
+		  width:100%;
+		  box-shadow:0 0 2px 1px silver;
+		}
+	</style>
+</head>
+<body>
+   <div id="picker">
+    <h3>Pick a colour </h3>
+    <div id="pickerarea">
+     <canvas width="240px" height="200" id="color_canvas">
+     </canvas>
+     <div id="marker"> </div>
+    </div>
+    
+     <div id="bar">
+     <canvas width="30px" height="200" id="color_bar">
+     </canvas>
+     <div id="marker2"> </div>
+    </div>
+    
+    <p> <span></span> ---> <span id="colorpicked"></span></p>
+    <p> <button onclick="onCancelPicker()">Cancel</button> <button onclick="onSelectColor()">OK </button></p>
+
+  </div>
+
+<script>
+  function initPicker(color){
+var colorCanvas = document.getElementById('color_canvas');
+var ColorCtx = colorCanvas .getContext('2d'); 
+let gradientH = ColorCtx .createLinearGradient(0, 0, ColorCtx.canvas.width, 0);
+gradientH.addColorStop(0, '#fff');
+gradientH.addColorStop(1, color);
+ColorCtx .fillStyle = gradientH;
+ColorCtx .fillRect(0, 0, ColorCtx.canvas.width, ColorCtx.canvas.height);
+
+// Create a Vertical Gradient(white to black)
+ let gradientV = ColorCtx .createLinearGradient(0, 0, 0, 300);
+ gradientV.addColorStop(0, 'rgba(0,0,0,0.2)');
+ gradientV.addColorStop(1, '#000');
+ ColorCtx .fillStyle = gradientV;
+ ColorCtx .fillRect(0, 0, ColorCtx .canvas.width, ColorCtx .canvas.height); 
+ 
+ colorCanvas.addEventListener('click',function(event){
+    let x = event.offsetX;  // Get X coordinate
+    let y = event.offsetY;  // Get Y coordinate
+    marker.style.top = y-event.target.offsetHeight+marker.offsetHeight+"px";
+    marker.style.left = x-marker.offsetWidth+"px";
+    var pixel = ColorCtx.getImageData(x,y,1,1)['data'];   // Read pixel Color
+    var rgb = `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`;
+    colorPicked= rgbToHex(pixel[0],pixel[1],pixel[2]);
+    colorpicked.style.background =colorPicked
+ });
+ 
+ }
+ 
+ function initBar(){
+ 
+ var colorCanvas = document.getElementById('color_bar');
+var ColorCtx = colorCanvas .getContext('2d'); 
+
+// Create a Vertical Gradient(white to black)
+ let gradientV = ColorCtx .createLinearGradient(0, 0, 0, 300);
+ gradientV.addColorStop(0, 'red');
+ gradientV.addColorStop(0.2, 'blue');
+ gradientV.addColorStop(0.4, 'white');
+ gradientV.addColorStop(0.6, 'yellow');
+ gradientV.addColorStop(0.8, 'green');
+ ColorCtx .fillStyle = gradientV;
+ ColorCtx .fillRect(0, 0, ColorCtx .canvas.width, ColorCtx .canvas.height); 
+ 
+ colorCanvas.addEventListener('click',function(event){
+    let x = event.offsetX;  // Get X coordinate
+    let y = event.offsetY;  // Get Y coordinate
+    marker2.style.top = y-event.target.offsetHeight+marker2.offsetHeight+"px";
+    marker2.style.left = marker2.style.left+"px";
+    var pixel = ColorCtx.getImageData(x,y,1,1)['data'];   // Read pixel Color
+    var rgb = `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`;
+     initPicker(rgb)
+ });
+ }
+ 
+ function onCancelPicker(){
+ 
+ }
+ 
+ function onSelectColor(){
+   var color= colorpicked.style.background;
+   alert( colorPicked);
+ }
+  const componentToHex = (c) => {
+  const hex = c.toString(16);
+  return hex.length == 1 ? "0" + hex : hex;
+}
+
+const rgbToHex = (r, g, b) => {
+  return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+//lert( rgbToHex(255, 51, 255))
+
+//"#ff33ff"
+ 
+ initPicker('rgb(200,0,15)')
+ initBar();
+</script>
+
+</body>
+
+</html>
